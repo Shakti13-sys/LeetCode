@@ -13,41 +13,48 @@ class Solution {
     }
 
     public boolean circularArrayLoop(int[] nums) {
-        for(int i=0; i<nums.length-1; i++){
-            Set<Integer> set = new HashSet<>();
-            set.add(i);
+        for(int i=0; i<nums.length; i++){
+            if(nums[i]==0){
+                continue;
+            }
             boolean isPos = nums[i]>0;
-            int curr = i;
-            while(true){
-                int next = calcNextIdx(nums, curr);
-                if(isPos) {
-                    if(nums[next]<0){
+            int slow = i;
+            int fast = i;
+
+            do{
+                slow=calcNextIdx(nums, slow);
+                fast = calcNextIdx(nums, fast);
+                if (isPos) {
+                    if(nums[slow]<0 || nums[fast]<0){
                         break;
-                    } else{
-                        if (set.contains(next)){
-                            if(curr!=next){
-                                return true;
-                            } else{
-                                break;
-                            }
-                        }
-                        set.add(next);
                     }
                 } else {
-                    if(nums[next]>0){
+                    if(nums[slow]>0 || nums[fast]>0){
                         break;
-                    } else {
-                        if(set.contains(next)){
-                            if(curr!=next){
-                                return true;
-                            } else{
-                                break;
-                            }
-                        }
-                        set.add(next);
                     }
                 }
-                curr = next;
+                fast = calcNextIdx(nums, fast);
+                if (slow == fast) {
+                    if (slow!=calcNextIdx(nums, slow)){
+                        return true;
+                    }
+                }
+            } while(slow!=fast);
+
+            int curr=i;
+
+            if (isPos) {
+                while(nums[curr]>0){
+                    int next = calcNextIdx(nums,curr);
+                    nums[curr]=0;
+                    curr=next;
+                }
+            } else {
+                while(nums[curr]<0){
+                    int next = calcNextIdx(nums, curr);
+                    nums[curr]=0;
+                    curr=next;
+                }
             }
         }
         return false;
